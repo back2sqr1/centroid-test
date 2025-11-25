@@ -1,0 +1,3 @@
+Robot Assignments: robot_2 -> (12, 15)
+{}
+robot_2 -> a

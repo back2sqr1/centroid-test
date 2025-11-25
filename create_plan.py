@@ -1,8 +1,8 @@
 import copy
 import json, uuid
-from .robot_class import Robot, RobotMap
-from .robot_manager import RobotManager, euclidean_distance, DISTANCE_TOLERANCE   
-from .time_step_node_class import TimeStepNode
+from robot_class import Robot, RobotMap
+from robot_manager import RobotManager, euclidean_distance, DISTANCE_TOLERANCE   
+from time_step_node_class import TimeStepNode
 import os
 
 COST_TOLERANCE = 0.001
@@ -40,16 +40,21 @@ class SearchTree:
         self.prop_to_location: dict[str, str] = {}
         self.props : set[str] = set()
         self.starting_prop: str = ''
+        self.root_node: str = ''
         self.next_query: dict[str, list[str]] = {}
         self.cost_map: dict[str, float] = {}
         self.bdd_config = self.import_bdd_config()
         
 
     def import_bdd_config(self):
-        with open ('src/my_robot_bringup/config/bdd.json', 'r') as file:
+        with open ('generated_bdd.json', 'r') as file:
             bdd_config = json.load(file)
 
-        self.props = set(bdd_config['props'])
+        self.props = set()
+        for node in bdd_config['nodes'].values():
+            if 'var' in node:
+                self.props.add(node['var'])
+        
         for prop in self.props:
             self.prop_to_location[prop] = []
 
@@ -67,8 +72,9 @@ class SearchTree:
                     self.location_to_prop[loc] = []
                 self.location_to_prop[loc].append(prop)
 
-        self.starting_prop = bdd_config['starting_prop']
-        self.next_query = bdd_config['edges'] 
+        self.root_node = bdd_config['root']
+        self.starting_prop = bdd_config['nodes'][self.root_node]['var']
+        self.next_query = bdd_config['nodes'] 
 
         return bdd_config
     
@@ -144,7 +150,7 @@ class SearchTree:
         robot_manager = RobotManager(
             robot_map=copy.deepcopy(initial_robot_map),
             next_question_map=self.next_query,
-            initial_question=self.starting_prop,
+            initial_question=self.root_node,
             props=self.props,
             location_to_pin=self.location_to_pin,
             pin_to_location=self.pin_to_location,
@@ -208,8 +214,8 @@ class SearchTree:
         best_plan_text = []
         best_plan : list[(str, tuple[int, int])] = []
         while cur_node is not None:
-            with open ('current_node.txt', 'a') as f:
-                f.write(f"{cur_node}\n")
+            # with open ('current_node.txt', 'a') as f:
+            #     f.write(f"{cur_node}\n")
             for next_node in cur_node.next:
                 if (abs(self.determine_cost(next_node) - best_cost)) < COST_TOLERANCE:
                     if next_node.type == 'robot_moving':
@@ -237,7 +243,7 @@ class SearchTree:
 #     'robot_2': Robot(id='robot_2', position=(2, 2))
 # })
 # initial_resolution = {
-# 
+
 # }
 # if os.path.exists('current_node.txt'):
 #     os.remove('current_node.txt')

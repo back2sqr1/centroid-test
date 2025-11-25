@@ -1,0 +1,22 @@
+// BDD
+digraph {
+	rankdir=TB
+	n4 [label="n4
+(x4)" fillcolor=lightblue shape=circle style=filled]
+	n4 -> false [label=0 style=dashed]
+	n4 -> false [label=1 style=solid]
+	false [label=false color=red fillcolor=lightpink shape=box style=filled]
+	n3 [label="n3
+(x3)" fillcolor=lightblue shape=circle style=filled]
+	n3 -> true [label=0 style=dashed]
+	n3 -> n4 [label=1 style=solid]
+	true [label=true color=green fillcolor=lightgreen shape=box style=filled]
+	n1 [label="n1
+(x1)" fillcolor=lightblue shape=circle style=filled]
+	n1 -> n4 [label=0 style=dashed]
+	n1 -> n2 [label=1 style=solid]
+	n2 [label="n2
+(x2)" fillcolor=lightblue shape=circle style=filled]
+	n2 -> n3 [label=0 style=dashed]
+	n2 -> n3 [label=1 style=solid]
+}

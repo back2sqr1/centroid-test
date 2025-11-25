@@ -1,5 +1,5 @@
-from .robot_class import Robot, RobotMap
-from .time_step_node_class import TimeStepNode
+from robot_class import Robot, RobotMap
+from time_step_node_class import TimeStepNode
 import copy
 import uuid
 
@@ -107,13 +107,20 @@ class RobotManager:
         for resolution in possible_resolutions:
             next_question = copy.deepcopy(query)
 
-            while next_question in resolution:
-                truth = resolution[next_question] == 'T'
-
-                if truth:
-                    next_question = self.next_question_map[next_question][1]
+            while True:
+                node_data = self.next_question_map[next_question]
+                if 'var' not in node_data:
+                    break
+                
+                prop = node_data['var']
+                if prop in resolution:
+                    truth = resolution[prop] == 'T'
+                    if truth:
+                        next_question = node_data['high']
+                    else:
+                        next_question = node_data['low']
                 else:
-                    next_question = self.next_question_map[next_question][0]
+                    break
 
             if next_question == current_time_step.query:
                 continue
@@ -129,7 +136,8 @@ class RobotManager:
             next_time_step.visited_locations = copy.deepcopy(new_visited_locations)
             current_time_step.next.append(next_time_step)
 
-            if next_question in self.props:
+            # Check if next_question is a valid property node (not a leaf)
+            if 'var' in self.next_question_map[next_question]:
                 self.time_step_queue.append(next_time_step)
 
     def update_robot_positions(self, robot_map: RobotMap):
@@ -201,9 +209,14 @@ class RobotManager:
         robot_ids = list(robot_map.keys())
         combinations : list[dict [str, str]] = []
         
+        node_data = self.next_question_map[property]
+        if 'var' not in node_data:
+            return []
+        actual_property = node_data['var']
+
         property_locations = []
         for loc in locations:
-            if property in self.location_to_prop[loc]:
+            if actual_property in self.location_to_prop[loc]:
                 property_locations.append(loc)
 
         if len(property_locations) == 0:
