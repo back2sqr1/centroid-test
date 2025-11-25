@@ -134,14 +134,14 @@ def run_simulation(ax, sim_index):
     return sc
 
 def main():
-    # Create 2x4 subplots
-    fig, axes = plt.subplots(2, 4, figsize=(24, 12))
+    # Create 2x2 subplots
+    fig, axes = plt.subplots(2, 2, figsize=(12, 12))
     axes = axes.flatten()
     
     for i, ax in enumerate(axes):
         run_simulation(ax, i+1)
         
-    plt.suptitle("Robot Logistics Simulation - 8 Random Scenarios", fontsize=16)
+    plt.suptitle("Robot Logistics Simulation - 4 Random Scenarios", fontsize=16)
     plt.tight_layout()
     plt.show()
 

@@ -1,0 +1,22 @@
+// BDD
+digraph {
+	rankdir=TB
+	p [label="p
+{d}" shape=circle]
+	"p*" [label="p*
+{b,d}" shape=circle]
+	"p**" [label="p**
+{b,d}" shape=circle]
+	"p***" [label="p***
+{a,b,c,d}" shape=circle]
+	true [label=true color=green fillcolor=lightgreen shape=box style=filled]
+	false [label=false color=red fillcolor=lightpink shape=box style=filled]
+	p -> "p***" [label=0 style=dashed]
+	p -> "p***" [label=1 style=solid]
+	"p*" -> true [label=0 style=dashed]
+	"p*" -> "p***" [label=1 style=solid]
+	"p**" -> "p***" [label=0 style=dashed]
+	"p**" -> false [label=1 style=solid]
+	"p***" -> false [label=0 style=dashed]
+	"p***" -> true [label=1 style=solid]
+}
